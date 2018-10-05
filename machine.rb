@@ -1,19 +1,17 @@
 class Machine
   class InvalidSelection < StandardError; end
 
-  def initialize(drinks)
-    @drinks = drinks
+  def initialize(supplies, drink_recipes)
+    @inventory = Inventory.new(supplies)
+    @drink_recipes = drink_recipes
   end
 
   def order_coffee(number)
-    require 'pry'; binding.pry
-    drink = @drinks[number - 1]
-    puts "Dispensing: #{drink.name}"
-    reduce_inventory(drink)
-  end
-
-  def restock
-    puts "restocking coffee"
+    drink_recipe = @drink_recipes[number - 1]
+    puts "Dispensing: #{drink_recipe[:name]}"
+    drink_recipe[:proportions].each do |proportion|
+      @inventory.reduce_units(proportion[:ingredient], proportion[:units])
+    end
   end
 
   def take_request
@@ -36,20 +34,10 @@ class Machine
       exit
     when 'r', 'R'
       restock
-    when -> (input) { input.to_i.between?(1, @drinks.length) }
+    when -> (input) { input.to_i.between?(1, @drink_recipes.length) }
       order_coffee(input.to_i)
     else
       raise InvalidSelection, "Invalid selection: #{input}"
-    end
-  end
-
-  def reduce_inventory(drink)
-    drink.drink_requirements.each do |drink_requirement|
-      if drink_requirement.quantity > drink_requirement.ingredient.available_units
-        raise "not enough available units of #{drink_requirement.ingredient}"
-      end
-
-      drink_requirement.ingredient.available_units =- drink_requirement.quantity
     end
   end
 

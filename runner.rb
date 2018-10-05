@@ -4,33 +4,72 @@ require_relative "drink_requirement.rb"
 require_relative "ingredient.rb"
 
 
-coffee        = Ingredient.new("Coffee", 75),
-decaf         = Ingredient.new("Decaf Coffee", 75)
-sugar         = Ingredient.new("Sugar", 25)
-cream         = Ingredient.new("Cream", 25)
-steamed_milk  = Ingredient.new("Steamed Milk", 35)
-foamed_milk   = Ingredient.new("Foamed Milk", 35)
-espresso      = Ingredient.new("Espresso", 110)
-cocoa         = Ingredient.new("Cocoa", 90)
-whipped_cream = Ingredient.new("Whipped Cream", 90)
-
-regular_coffee_requirements = [
-  DrinkRequirement.new(coffee, 3),
-  DrinkRequirement.new(sugar, 1),
-  DrinkRequirement.new(cream, 1)
+supplies = [
+  {
+    name: "Coffee",
+    cost: 75,
+    units: 10
+  },
+  {
+    name: "Decaf Coffee",
+    cost: 75,
+    units: 10
+  },
+  {
+    name: "Sugar",
+    cost: 25,
+    units: 10
+  },
+  {
+    name: "Cream",
+    cost: 25,
+    units: 10
+  },
+  {
+    name: "Steamed Milk",
+    cost: 35,
+    units: 10
+  },
+  {
+    name: "Foamed Milk",
+    cost: 35,
+    units: 10
+  },
+  {
+    name: "Espresso",
+    cost: 110,
+    units: 10
+  },
+  {
+    name: "Cocoa",
+    cost: 90,
+    units: 10
+  },
+  {
+    name: "Whipped Cream",
+    cost: 100,
+    units: 10
+  }
 ]
-regular_coffee = Drink.new("Coffee", regular_coffee_requirements)
 
-decaf_coffee_requirements = [
-  DrinkRequirement.new(decaf, 3),
-  DrinkRequirement.new(sugar, 1),
-  DrinkRequirement.new(cream, 1)
+drink_recipes = [
+  {
+    name: "Coffee",
+    proportions: [
+      {
+        ingredient: "Coffee",
+        units: 3
+      },
+      {
+        ingredient: "Sugar",
+        units: 1
+      },
+      {
+        ingredient: "Cream",
+        units: 1
+      }
+    ]
+  }
 ]
-decaf_coffee = Drink.new("Decaf Coffee", decaf_coffee_requirements)
 
-machine = Machine.new([
-  regular_coffee,
-  decaf_coffee
-])
-machine.take_request
-
+Machine.new(supplies, drink_recipes)
