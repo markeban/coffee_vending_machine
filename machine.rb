@@ -1,10 +1,13 @@
-require_relative "recipe_collection.rb"
-require_relative "inventory.rb"
+# frozen_string_literal: true
 
+require_relative 'recipe_collection.rb'
+require_relative 'inventory.rb'
+
+# Machine is a CLI that manages drink orders
 class Machine
   class InvalidSelection < StandardError; end
 
-  def initialize(base_ingredients_data, recipes_data)
+  def initialize(base_ingredients_data:, recipes_data:)
     @inventory = Inventory.new(base_ingredients_data)
     @recipe_collection = RecipeCollection.new(recipes_data)
   end
@@ -18,33 +21,23 @@ class Machine
     puts e.message
     take_request
   end
-  
+
   private
-  
+
   def display_inventory
-    puts "Inventory: "
-    @inventory.each do |id, base_ingredient|
-      puts "#{base_ingredient.name}, #{base_ingredient.unit_count}" 
+    puts 'Inventory: '
+    @inventory.each do |_id, base_ingredient|
+      puts "#{base_ingredient.name}, #{base_ingredient.unit_count}"
     end
   end
-  
+
   def display_menu
-    puts "Menu: "
+    puts 'Menu: '
     @recipe_collection.each do |id, recipe|
-      puts "#{id}, #{recipe.name}, #{US_dollarize(cost_in_cents(recipe))}, #{drink_in_stock?(recipe)}"
+      puts "#{id}, #{recipe.name}, #{dollarize(cost_in_cents(recipe))}, #{drink_in_stock?(recipe)}"
     end
   end
 
-  def US_dollarize(cost_in_cents)
-    "$#{sprintf('%.2f', cost_in_cents.to_i/100.0)}"
-  end
-
-  def cost_in_cents(recipe)
-    recipe.ingredients.reduce(0) do |sum, ingredient|
-      sum + (@inventory.find(ingredient.base_ingredient_id).cost * ingredient.unit_count)
-    end
-  end
-  
   def make_selection
     input = gets.chomp
     case input
@@ -54,13 +47,23 @@ class Machine
       exit
     when 'r', 'R'
       @inventory.fill_all
-    when -> (input) { @recipe_collection.recipes.keys.include?(input.to_i) }
+    when ->(number_input) { @recipe_collection.recipes.key?(number_input.to_i) }
       order_drink(input.to_i)
     else
       raise InvalidSelection, "Invalid selection: #{input}"
     end
   end
-  
+
+  def dollarize(cost_in_cents)
+    "$#{format('%.2f', cost_in_cents.to_i / 100.0)}"
+  end
+
+  def cost_in_cents(recipe)
+    recipe.ingredients.reduce(0) do |sum, ingredient|
+      sum + (@inventory.find(ingredient.base_ingredient_id).cost_in_cents * ingredient.unit_count)
+    end
+  end
+
   def order_drink(id)
     recipe = @recipe_collection.find(id)
     raise InvalidSelection, "Out of stock: #{recipe.name}" unless drink_in_stock?(recipe)

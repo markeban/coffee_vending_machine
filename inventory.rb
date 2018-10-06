@@ -1,5 +1,8 @@
-require_relative "base_ingredient.rb"
+# frozen_string_literal: true
 
+require_relative 'base_ingredient.rb'
+
+# Inventory is a collection of base ingredients
 class Inventory
   include Enumerable
 
@@ -8,7 +11,7 @@ class Inventory
       BaseIngredient.new(base_ingredient_data)
     end
   end
-  
+
   def find(key)
     @base_ingredients.fetch(key)
   end
@@ -18,6 +21,6 @@ class Inventory
   end
 
   def fill_all
-    @base_ingredients.each {|id, base_ingredient| base_ingredient.fill }
+    @base_ingredients.values.each(&:fill)
   end
 end

@@ -1,56 +1,58 @@
-require_relative "machine.rb"
+# frozen_string_literal: true
+
+require_relative 'machine.rb'
 
 base_ingredients_data = {
   1 => {
-    name: "Cocoa",
-    cost: 90,
+    name: 'Cocoa',
+    cost_in_cents: 90,
     unit_count: 10
   },
   2 => {
-    name: "Coffee",
-    cost: 75,
+    name: 'Coffee',
+    cost_in_cents: 75,
     unit_count: 10
   },
   3 => {
-    name: "Cream",
-    cost: 25,
+    name: 'Cream',
+    cost_in_cents: 25,
     unit_count: 10
   },
   4 => {
-    name: "Decaf Coffee",
-    cost: 75,
+    name: 'Decaf Coffee',
+    cost_in_cents: 75,
     unit_count: 10
   },
   5 => {
-    name: "Espresso",
-    cost: 110,
+    name: 'Espresso',
+    cost_in_cents: 110,
     unit_count: 10
   },
   6 => {
-    name: "Foamed Milk",
-    cost: 35,
+    name: 'Foamed Milk',
+    cost_in_cents: 35,
     unit_count: 10
   },
   7 => {
-    name: "Steamed Milk",
-    cost: 35,
+    name: 'Steamed Milk',
+    cost_in_cents: 35,
     unit_count: 10
   },
   8 => {
-    name: "Sugar",
-    cost: 25,
+    name: 'Sugar',
+    cost_in_cents: 25,
     unit_count: 10
   },
   9 => {
-    name: "Whipped Cream",
-    cost: 100,
+    name: 'Whipped Cream',
+    cost_in_cents: 100,
     unit_count: 10
   }
 }
 
 recipes_data = {
   1 => {
-    name: "Caffe Americano",
+    name: 'Caffe Americano',
     ingredients: [
       {
         base_ingredient_id: 5,
@@ -59,7 +61,7 @@ recipes_data = {
     ]
   },
   2 => {
-    name: "Caffe Latte",
+    name: 'Caffe Latte',
     ingredients: [
       {
         base_ingredient_id: 5,
@@ -72,7 +74,7 @@ recipes_data = {
     ]
   },
   3 => {
-    name: "Caffe Mocha",
+    name: 'Caffe Mocha',
     ingredients: [
       {
         base_ingredient_id: 5,
@@ -93,7 +95,7 @@ recipes_data = {
     ]
   },
   4 => {
-    name: "Cappuccino",
+    name: 'Cappuccino',
     ingredients: [
       {
         base_ingredient_id: 5,
@@ -110,7 +112,7 @@ recipes_data = {
     ]
   },
   5 => {
-    name: "Coffee",
+    name: 'Coffee',
     ingredients: [
       {
         base_ingredient_id: 2,
@@ -127,7 +129,7 @@ recipes_data = {
     ]
   },
   6 => {
-    name: "Decaf Coffee",
+    name: 'Decaf Coffee',
     ingredients: [
       {
         base_ingredient_id: 4,
@@ -145,5 +147,8 @@ recipes_data = {
   }
 }
 
-machine = Machine.new(base_ingredients_data, recipes_data)
+machine = Machine.new(
+  base_ingredients_data: base_ingredients_data,
+  recipes_data: recipes_data
+)
 machine.take_request
