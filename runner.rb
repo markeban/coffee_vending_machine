@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'machine.rb'
+require_relative 'inventory.rb'
+require_relative 'recipe_collection.rb'
 
 base_ingredients_data = {
   1 => {

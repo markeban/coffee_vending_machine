@@ -1,22 +1,25 @@
 # frozen_string_literal: true
 
-require_relative 'recipe.rb'
-
+require_relative 'collection_tool.rb'
 # RecipeCollection is a collection of recipes
 class RecipeCollection
-  include Enumerable
-
-  attr_reader :recipes
+  include CollectionTool
 
   def initialize(recipes_data)
-    @recipes = recipes_data.transform_values { |recipe_data| Recipe.new(recipe_data) }
+    @collection = recipes_data.transform_values { |recipe_data| Recipe.new(recipe_data) }
   end
 
-  def find(key)
-    @recipes.fetch(key)
-  end
+  # Recipe stores instructions for the ingredients and corresponding quanities to make a drink
+  class Recipe
+    Ingredient = Struct.new(:base_ingredient_id, :unit_count)
 
-  def each(&block)
-    @recipes.each(&block)
+    attr_reader :name, :ingredients
+
+    def initialize(recipe_data)
+      @name = recipe_data.fetch(:name)
+      @ingredients = recipe_data.fetch(:ingredients).map do |ingredient_data|
+        Ingredient.new(ingredient_data.fetch(:base_ingredient_id), ingredient_data.fetch(:unit_count))
+      end
+    end
   end
 end

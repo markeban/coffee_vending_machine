@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'recipe_collection.rb'
-require_relative 'inventory.rb'
-
 # Machine is a CLI that manages drink orders
 class Machine
   class InvalidSelection < StandardError; end
@@ -22,24 +19,25 @@ class Machine
     take_request
   end
 
-  private
-
   def display_inventory
-    puts 'Inventory: '
-    @inventory.each do |_id, base_ingredient|
-      puts "#{base_ingredient.name}, #{base_ingredient.unit_count}"
+    display_inventory_items = @inventory.map do |_id, base_ingredient|
+      "#{base_ingredient.name},#{base_ingredient.unit_count}"
     end
+    display_inventory_items.unshift('Inventory:')
+    puts display_inventory_items.join("\n")
   end
-
+  
   def display_menu
-    puts 'Menu: '
-    @recipe_collection.each do |id, recipe|
-      puts "#{id}, #{recipe.name}, #{dollarize(cost_in_cents(recipe))}, #{drink_in_stock?(recipe)}"
+    display_menu_items = @recipe_collection.map do |id, recipe|
+      "#{id},#{recipe.name},#{dollarize(cost_in_cents(recipe))},#{drink_in_stock?(recipe)}"
     end
+    display_menu_items.unshift('Menu:')
+    puts display_menu_items.join("\n")
   end
-
+  
   def make_selection
-    input = gets.chomp
+    input = STDIN.gets.chomp
+    require 'pry'; binding.pry
     case input
     when ''
       make_selection
@@ -47,22 +45,14 @@ class Machine
       exit
     when 'r', 'R'
       @inventory.fill_all
-    when ->(number_input) { @recipe_collection.recipes.key?(number_input.to_i) }
+    when ->(number_input) { @recipe_collection.find(number_input.to_i) }
       order_drink(input.to_i)
     else
       raise InvalidSelection, "Invalid selection: #{input}"
     end
   end
 
-  def dollarize(cost_in_cents)
-    "$#{format('%.2f', cost_in_cents.to_i / 100.0)}"
-  end
-
-  def cost_in_cents(recipe)
-    recipe.ingredients.reduce(0) do |sum, ingredient|
-      sum + (@inventory.find(ingredient.base_ingredient_id).cost_in_cents * ingredient.unit_count)
-    end
-  end
+  private
 
   def order_drink(id)
     recipe = @recipe_collection.find(id)
@@ -79,5 +69,15 @@ class Machine
       @inventory.find(ingredient.base_ingredient_id).available_units?(ingredient.unit_count)
     end
     checks.all?
+  end
+
+  def dollarize(cost_in_cents)
+    "$#{format('%.2f', cost_in_cents.to_i / 100.0)}"
+  end
+
+  def cost_in_cents(recipe)
+    recipe.ingredients.reduce(0) do |sum, ingredient|
+      sum + (@inventory.find(ingredient.base_ingredient_id).cost_in_cents * ingredient.unit_count)
+    end
   end
 end
