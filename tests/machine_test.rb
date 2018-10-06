@@ -102,20 +102,56 @@ RSpec.describe Machine do
   end
 
   describe '#make_selection' do
-    context 'user enters empty string' do
-      before do
-        allow(STDIN).to receive(:gets).and_return('')
-        allow(Machine).to receive(:new).and_return(machine)
-        allow(machine).to receive(:make_selection).and_call_original
-      end
+    # context 'user enters empty string' do
+    #   before do
+    #     allow(STDIN).to receive(:gets).and_return('')
+    #     allow(Machine).to receive(:new).and_return(machine)
+    #     allow(machine).to receive(:make_selection).and_call_original
+    #   end
 
-      after do
-        allow(STDIN).to receive(:gets).and_return('q')
-      end
+    #   after do
+    #     allow(STDIN).to receive(:gets).and_return('q')
+    #   end
 
-      it 'restarts make_selection if input is empty string' do
-        expect(machine.make_selection).to have_received(:make_selection).twice
+    #   it 'restarts make_selection if input is empty string' do
+    #     expect(machine.make_selection).to have_received(:make_selection).twice
+    #   end
+    # end
+
+    it 'quits the program when q entered' do
+      allow(STDIN).to receive(:gets).and_return('q')
+      expect { machine.make_selection }.to raise_error(SystemExit) do |error|
+        expect(error.status).to eq(0)
       end
+    end
+
+    it 'quits the program when Q entered' do
+      allow(STDIN).to receive(:gets).and_return('Q')
+      expect { machine.make_selection }.to raise_error(SystemExit) do |error|
+        expect(error.status).to eq(0)
+      end
+    end
+
+    it 'dispenses a chosen drink' do
+      allow(STDIN).to receive(:gets).and_return('1')
+      expect { machine.make_selection }.to output("Dispensing: Coffee\n").to_stdout
+    end
+
+    it 'outputs an InvalidSelection error if input is unexpected value' do
+      allow(STDIN).to receive(:gets).and_return('bad_input')
+      expect { machine.make_selection }.to raise_error(Machine::InvalidSelection, 'Invalid selection: bad_input')
+    end
+
+    it 'outputs an InvalidSelection error if drink selected is out-of-stock' do
+      allow(STDIN).to receive(:gets).and_return('1')
+      expect { 4.times { machine.make_selection } }.to raise_error(Machine::InvalidSelection, 'Out of stock: Coffee')
+    end
+
+    it 'refeshes inventory when r entered' do
+      # TODO!!!!
+      allow(STDIN).to receive(:gets).and_return('1')
+      3.times { machine.make_selection }
+      expect.to raise_error(Machine::InvalidSelection, 'Out of stock: Coffee')
     end
   end
 end

@@ -37,7 +37,6 @@ class Machine
   
   def make_selection
     input = STDIN.gets.chomp
-    require 'pry'; binding.pry
     case input
     when ''
       make_selection
