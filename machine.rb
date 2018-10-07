@@ -53,7 +53,7 @@ class Machine
     end
   rescue InvalidSelection => e
     puts e.message
-    make_selection
+    take_request
   end
 
   def dispense_drink(id)

@@ -240,15 +240,13 @@ RSpec.describe Machine do
 
     context 'when input is unexpected value' do
       before do
-        described_class.instance_eval do
-          alias_method :make_selection_not_stubbed, :make_selection
-        end
-        allow(machine).to receive(:make_selection)
+        allow(machine).to receive(:take_request)
         allow(STDIN).to receive(:gets).and_return('bad_input')
       end
 
       it 'outputs an InvalidSelection error' do
-        expect { machine.make_selection_not_stubbed }.to output("Invalid selection: bad_input\n").to_stdout
+        expect { machine.make_selection }.to output("Invalid selection: bad_input\n").to_stdout
+        expect(machine).to have_received(:take_request).once
       end
     end
   end
