@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'bundler/setup'
 require 'rspec'
 require_relative '../recipe_collection.rb'
 

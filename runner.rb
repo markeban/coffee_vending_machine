@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
+require 'bundler/setup'
 require_relative 'machine.rb'
-require_relative 'inventory.rb'
-require_relative 'recipe_collection.rb'
+
+oldest_workable_ruby_version = '2.5.1'
+if Gem::Version.new(RUBY_VERSION) < Gem::Version.new(oldest_workable_ruby_version)
+  raise "Ruby version must be #{oldest_workable_ruby_version} or above"
+end
 
 base_ingredients_data = {
   1 => {

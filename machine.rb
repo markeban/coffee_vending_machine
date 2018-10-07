@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
+require_relative 'inventory.rb'
+require_relative 'recipe_collection.rb'
+
 # Machine is a CLI that manages drink orders
 class Machine
   class InvalidSelection < StandardError; end
+
+  attr_reader :inventory, :recipe_collection
 
   def initialize(base_ingredients_data:, recipes_data:)
     @inventory = Inventory.new(base_ingredients_data)
@@ -14,9 +19,6 @@ class Machine
     display_menu
     make_selection
     take_request
-  rescue InvalidSelection => e
-    puts e.message
-    take_request
   end
 
   def display_inventory
@@ -26,7 +28,7 @@ class Machine
     display_inventory_items.unshift('Inventory:')
     puts display_inventory_items.join("\n")
   end
-  
+
   def display_menu
     display_menu_items = @recipe_collection.map do |id, recipe|
       "#{id},#{recipe.name},#{dollarize(cost_in_cents(recipe))},#{drink_in_stock?(recipe)}"
@@ -34,7 +36,7 @@ class Machine
     display_menu_items.unshift('Menu:')
     puts display_menu_items.join("\n")
   end
-  
+
   def make_selection
     input = STDIN.gets.chomp
     case input
@@ -45,22 +47,23 @@ class Machine
     when 'r', 'R'
       @inventory.fill_all
     when ->(number_input) { @recipe_collection.find(number_input.to_i) }
-      order_drink(input.to_i)
+      puts "Dispensing: #{dispense_drink(input.to_i)}"
     else
       raise InvalidSelection, "Invalid selection: #{input}"
     end
+  rescue InvalidSelection => e
+    puts e.message
+    make_selection
   end
 
-  private
-
-  def order_drink(id)
+  def dispense_drink(id)
     recipe = @recipe_collection.find(id)
     raise InvalidSelection, "Out of stock: #{recipe.name}" unless drink_in_stock?(recipe)
 
     recipe.ingredients.each do |ingredient|
       @inventory.find(ingredient.base_ingredient_id).use_units(ingredient.unit_count)
     end
-    puts "Dispensing: #{recipe.name}"
+    recipe.name
   end
 
   def drink_in_stock?(recipe)
@@ -69,6 +72,8 @@ class Machine
     end
     checks.all?
   end
+
+  private
 
   def dollarize(cost_in_cents)
     "$#{format('%.2f', cost_in_cents.to_i / 100.0)}"

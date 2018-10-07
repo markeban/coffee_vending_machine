@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'bundler/setup'
 require 'rspec'
 require_relative '../inventory.rb'
 
@@ -66,6 +67,7 @@ RSpec.describe Inventory::BaseIngredient do
       unit_count: 2
     }
   end
+
   describe '#available_units?' do
     it 'returns true if enough units exist to dispense' do
       units_requested = 1
